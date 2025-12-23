@@ -77,8 +77,75 @@ uploaded_at  When the file was uploaded. Defaults to current time.
 -Create index for vector similarity search
 -Create index for document lookup
 
-After setting up all database and all docker --
+After setting up all database and all docker the system run -
 -----------------------------------------------------------------------------------------------
+Lets create a scenario like user upload an python notes pdf and ask the question:
+content =  pages about python 
+Database  = document_id = ...,..this much chunk stored.
+
+And after queurying user starts to ask :
+1.What is python Dictionary?
+-This thing user will type in streamlit chat 
+     Line No 180- in app.py -streamlit captures it 
+Then it will catch this part :
+st.session_state.messages.append --line No -192
+
+Now, Frontend Calss Backend API and HTTP request is sent back and it receives to the backend 
+(/chat endpoint) :
+                FastAPI receives HTTP request
+               Validates question is not empty
+               Calls rag_service.query()
+
+RAG Service - It will starts querying in pipeline 
+Receive relevant chunks from the retrieve_relevant_chunks method
+
+Then it will generate the Question Embeddings :
+query_embedding = array([0.234, -0.567, 0.891, ..., -0.456])  # 384 dimensions
+And then it will search in PostgresSQL Vector Database using similarity search.
+And then it will prepare context from Retrieved chunks
+-----
+context = """
+[Chunk 1]: Python Dictionary
+
+A dictionary is a built-in data structure that stores key-value pairs. Each key must be unique and immutable (like strings or numbers), while values can be any data type. Dictionaries are defined using curly braces {} and are very efficient for lookups.
+
+Example:
+student = {"name": "John", "age": 20, "grade": "A"}
+
+[Chunk 2]: Data Structures in Python
+
+Python provides several built-in data structures. Dictionaries are particularly useful for mapping keys to values. Unlike lists which use numeric indices, dictionaries use keys for accessing values. This makes them ideal for representing structured data.
+
+[Chunk 3]: Dictionary Methods
+
+Dictionaries support various methods like .get(), .keys(), .values(), and .items(). You can add new key-value pairs by assignment: dict[new_key] = value. The .get() method safely retrieves values without raising errors if the key doesn't exist.
+"""
+------
+
+Now HTTP request is sent to Google Gemini APi and geminin model will read the prompt and generate the answer based only on provided context and returns text.
+
+Finally backend returns to the frontend.
+
+In simple flow,
+1.user types question            
+2. Streamlit capture
+3. HTTP request to backend           
+4. Generate question embedding          
+5. PostgreSQL vector search (25 chunks)
+6. Prepare context    
+7. Gemini API call                       
+8. Return response                   
+9. Display in Streamlit               
+
+-----------------------------------------------------------------
+Why sentence transformers is used?
+Main problem is computers cannot understand the text and if we move from the traditional matching of keyword matching then it will be limited .
+So , we converted it into numbers from text so sentence transformers is used to convert the text into vectors that capture semantic meaning and context .
+                    from sentence_transformers import SentenceTransformer
+
+               model = SentenceTransformer('all-MiniLM-L6-v2')
+
+
 
 
 
