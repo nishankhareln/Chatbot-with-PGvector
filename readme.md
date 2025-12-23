@@ -141,9 +141,10 @@ In simple flow,
 Why sentence transformers is used?
 Main problem is computers cannot understand the text and if we move from the traditional matching of keyword matching then it will be limited .
 So , we converted it into numbers from text so sentence transformers is used to convert the text into vectors that capture semantic meaning and context .
-                    from sentence_transformers import SentenceTransformer
 
-               model = SentenceTransformer('all-MiniLM-L6-v2')
+
+ from sentence_transformers import SentenceTransformer
+ model = SentenceTransformer('all-MiniLM-L6-v2')
 
 
 
