@@ -105,7 +105,7 @@ class RAGService:
         self, 
         query: str, 
         context_chunks: List[Dict],
-        min_similarity: float = 0.3
+        min_similarity: float = 0.5
     ) -> str:
         """
         Generate answer using LLM with retrieved context

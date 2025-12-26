@@ -5,7 +5,7 @@ from typing import List
 
 
 class DocumentService:
-    def __init__(self, chunk_size=500, chunk_overlap=50):
+    def __init__(self, chunk_size=800, chunk_overlap=100):
         """
         Initialize document service with chunking parameters
         
