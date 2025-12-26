@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:2060@localhost:5432/rag_database")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:2060@localhost:5433/rag_database")
 
 
 class Database:
