@@ -51,18 +51,18 @@ class AdvancedDocumentService:
         methods_tried = []
         
         # METHOD 1: PyPDF2 (Fast, basic extraction)
-        print("\n🔍 Method 1: PyPDF2 (Basic Text Extraction)")
+        print("\nMethod 1: PyPDF2 (Basic Text Extraction)")
         try:
             text = self._extract_with_pypdf2(file_path)
             methods_tried.append(("PyPDF2", len(text) if text else 0))
             
             if text and len(text.strip()) > 100:  # At least 100 chars
-                print(f"   ✅ SUCCESS: Extracted {len(text)} characters")
+                print(f"  SUCCESS: Extracted {len(text)} characters")
                 extracted_text = text
             else:
-                print(f"   ⚠️  Insufficient text: {len(text) if text else 0} chars")
+                print(f" Insufficient text: {len(text) if text else 0} chars")
         except Exception as e:
-            print(f"   ❌ FAILED: {str(e)[:100]}")
+            print(f"  FAILED: {str(e)[:100]}")
             methods_tried.append(("PyPDF2", 0))
         
         # If PyPDF2 worked well, return
@@ -76,12 +76,12 @@ class AdvancedDocumentService:
             methods_tried.append(("pdfplumber", len(text) if text else 0))
             
             if text and len(text.strip()) > 100:
-                print(f"   ✅ SUCCESS: Extracted {len(text)} characters")
+                print(f"  SUCCESS: Extracted {len(text)} characters")
                 extracted_text = text
             else:
-                print(f"   ⚠️  Insufficient text: {len(text) if text else 0} chars")
+                print(f"    Insufficient text: {len(text) if text else 0} chars")
         except Exception as e:
-            print(f"   ❌ FAILED: {str(e)[:100]}")
+            print(f"    FAILED: {str(e)[:100]}")
             methods_tried.append(("pdfplumber", 0))
         
         # If pdfplumber worked, return

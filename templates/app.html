@@ -674,3 +674,117 @@
                                             <div class="flex items-center gap-2 truncate flex-1 mr-2">
                                                 <span class="material-symbols-outlined text-gray-500 text-sm">description</span>
                                                 <span class="text-xs font-medium text-gray-300 truncate"
+
+                                                <span class="text-xs font-medium text-gray-300 truncate">${escapeHTML(source.filename)}</span>
+                                            </div>
+                                            <span class="text-[10px] font-mono ${scoreClass} px-1.5 py-0.5 rounded border whitespace-nowrap">
+                                                ${(source.similarity * 100).toFixed(0)}%
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-gray-400 leading-relaxed line-clamp-3 font-mono">
+                                            ${escapeHTML(source.text)}
+                                        </p>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </details>
+                </div>
+            ` : '';
+
+            const messageHTML = `
+                <div class="flex w-full fade-in">
+                    <div class="flex max-w-3xl items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
+                            <span class="material-symbols-outlined text-sm text-white">smart_toy</span>
+                        </div>
+                        <div class="flex flex-col gap-3 w-full">
+                            <div class="bg-card-dark border border-gray-800 text-gray-100 rounded-2xl rounded-tl-sm px-6 py-5 shadow-sm">
+                                <p class="text-sm md:text-base leading-relaxed whitespace-pre-wrap">${escapeHTML(answer)}</p>
+                            </div>
+                            ${sourcesHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            chatContainer.insertAdjacentHTML('beforeend', messageHTML);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+        
+        uploadBox.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', async () => {
+            if (fileInput.files.length > 0) {
+                await uploadDocuments(fileInput.files);
+                fileInput.value = '';
+            }
+        });
+
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        topKSlider.addEventListener('input', (e) => {
+            topK = parseInt(e.target.value);
+            topKValue.textContent = topK;
+        });
+
+        documentScope.addEventListener('change', (e) => {
+            currentDocumentId = e.target.value ? parseInt(e.target.value) : null;
+        });
+
+        clearChatBtn.addEventListener('click', () => {
+            if (confirm('Clear all messages?')) {
+                const messages = chatContainer.querySelectorAll('.fade-in');
+                messages.forEach(msg => msg.remove());
+                welcomeState.style.display = 'flex';
+                chatHistory = [];
+            }
+        });
+
+        refreshBtn.addEventListener('click', loadDocuments);
+
+        mobileMenuBtn.addEventListener('click', openMobileSidebar);
+        closeSidebarBtn.addEventListener('click', closeMobileSidebar);
+        mobileOverlay.addEventListener('click', closeMobileSidebar);
+
+        exportBtn.addEventListener('click', () => {
+            if (chatHistory.length === 0) {
+                showToast('No chat history to export', 'warning');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(chatHistory, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `chat-history-${new Date().toISOString()}.json`;
+            link.click();
+            showToast('Chat exported successfully', 'success');
+        });
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        (async function init() {
+            console.log('🚀 Initializing RAG Assistant...');
+            await checkBackendHealth();
+            await loadDocuments();
+            messageInput.focus();
+            console.log('✅ Initialization complete');
+        })();
+    </script>
+</body>
+</html>

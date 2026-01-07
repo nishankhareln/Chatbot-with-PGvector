@@ -1,5 +1,5 @@
 from sentence_transformers import SentenceTransformer
-import google.generativeai as genai
+from google import genai
 import os
 from dotenv import load_dotenv
 import numpy as np
@@ -8,10 +8,8 @@ from database import db
 
 load_dotenv()
 
-# Configure Gemini
+# Configure Gemini with new API
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-genai.configure(api_key=GEMINI_API_KEY)
-
 
 class RAGService:
     def __init__(self):
@@ -20,8 +18,8 @@ class RAGService:
         print("Loading embedding model...")
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         
-        # Initialize Gemini model (free tier)
-        self.llm = genai.GenerativeModel('gemini-2.5-flash')
+        # Initialize Gemini client (new API)
+        self.client = genai.Client(api_key=GEMINI_API_KEY)
         
         print("RAG Service initialized")
     
@@ -152,13 +150,17 @@ Instructions:
 Answer:"""
         
         try:
-            # Generate response using Gemini
-            response = self.llm.generate_content(prompt)
+            # Generate response using Gemini (new API)
+            response = self.client.models.generate_content(
+                model='gemini-2.5-flash',  # Use flash for speed (can also use gemini-1.5-pro)
+                contents=prompt
+            )
             answer = response.text
             
             return answer
             
         except Exception as e:
+            print(f"Error calling Gemini API: {e}")
             return f"Error generating answer: {str(e)}"
     
     def query(
