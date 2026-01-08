@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Database with pgvector
   postgres:
     image: pgvector/pgvector:pg16
     container_name: rag_postgres
@@ -18,6 +19,39 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - rag_network
+    restart: unless-stopped
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag_backend
+    environment:
+      - DATABASE_URL=postgresql://postgres:2060@postgres:5432/rag_database
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - rag_network
+    restart: unless-stopped
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 volumes:
   postgres_data:
+    driver: local
+  uploads_data:
+    driver: local
+
+networks:
+  rag_network:
+    driver: bridge
