@@ -7,6 +7,7 @@ __pycache__/
 env/
 venv/
 ENV/
+.venv/
 build/
 develop-eggs/
 dist/
@@ -22,21 +23,26 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# Environment variables
+# Environment / secrets
 .env
+.env.*
+!.env.example
+*.pem
+*.key
 
-# IDE
+# IDE / editor
 .vscode/
 .idea/
 *.swp
 *.swo
+*.swn
 
-# Data
-data/uploads/*
-!data/uploads/.gitkeep
-data/vector_db/*
-!data/vector_db/.gitkeep
+# Claude Code
+.claude/
 
 # Streamlit
 .streamlit/
@@ -44,3 +50,35 @@ data/vector_db/*
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# User-uploaded documents (do NOT commit user data)
+backend/uploads/
+data/uploads/*
+!data/uploads/.gitkeep
+data/vector_db/*
+!data/vector_db/.gitkeep
+uploads/
+
+# Model / HF caches (downloaded at runtime, can be GBs)
+.cache/
+*/.cache/
+huggingface/
+sentence_transformers_cache/
+~/.cache/huggingface/
+
+# Random screenshots / scratch
+image.png
+screenshot*.png
+scratch/
+tmp/
+
+# Docker
+*.tar
+
+# Jupyter
+.ipynb_checkpoints/

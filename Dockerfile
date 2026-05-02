@@ -9,12 +9,19 @@ RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     libpq-dev \
+    tesseract-ocr \
+    poppler-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first (for caching)
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install CPU-only torch first (avoids ~1.5GB CUDA wheels pulled by default)
+RUN pip install --no-cache-dir \
+    --index-url https://download.pytorch.org/whl/cpu \
+    torch==2.5.1
+
+# Install the rest of the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code

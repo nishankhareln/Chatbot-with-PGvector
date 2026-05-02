@@ -3,16 +3,12 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>RAG Assistant - Document Q&A System</title>
-    
-    <!-- Fonts and Icons -->
+    <title>Advanced RAG - Document Q&amp;A System</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    
-    <!-- Tailwind Configuration -->
+
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -25,114 +21,85 @@
                         "sidebar-dark": "#161b22",
                         "card-dark": "#1e232e",
                     },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem", 
-                        "lg": "0.5rem", 
-                        "xl": "0.75rem", 
-                        "full": "9999px"
-                    },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
                 },
             },
         }
     </script>
-    
+
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #374151;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #4b5563;
-        }
-        
-        /* Range Slider Styling */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+        input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 16px;
-            width: 16px;
-            border-radius: 50%;
-            background: #135bec;
-            cursor: pointer;
-            margin-top: -6px;
+            -webkit-appearance: none; appearance: none; height: 16px; width: 16px; border-radius: 50%;
+            background: #135bec; cursor: pointer; margin-top: -6px;
         }
         input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: #374151;
-            border-radius: 2px;
+            width: 100%; height: 4px; cursor: pointer; background: #374151; border-radius: 2px;
         }
 
-        /* Loading animation */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .animate-bounce-dot {
-            animation: bounce 1s ease-in-out infinite;
-        }
-        .delay-100 {
-            animation-delay: 0.1s;
-        }
-        .delay-200 {
-            animation-delay: 0.2s;
-        }
+        @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .animate-bounce-dot { animation: bounce 1s ease-in-out infinite; }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
 
-        /* Fade in animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
 
-        /* Mobile sidebar */
-        .sidebar-mobile {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
+        .sidebar-mobile { transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
+        .sidebar-mobile.open { transform: translateX(0); }
+
+        .citation {
+            display: inline-block; padding: 0 5px; margin: 0 2px;
+            background: rgba(19, 91, 236, 0.18); color: #6ea4ff;
+            border-radius: 4px; font-size: 0.75em; font-weight: 600;
+            cursor: pointer; vertical-align: super;
+            border: 1px solid rgba(19, 91, 236, 0.35);
         }
-        .sidebar-mobile.open {
-            transform: translateX(0);
+        .citation:hover { background: rgba(19, 91, 236, 0.35); color: #fff; }
+
+        .stream-cursor::after {
+            content: '▌'; color: #135bec; animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .badge {
+            display: inline-block; padding: 2px 8px; border-radius: 999px;
+            background: rgba(19, 91, 236, 0.15); color: #6ea4ff;
+            font-size: 0.7rem; font-weight: 500; margin-right: 4px;
+            border: 1px solid rgba(19, 91, 236, 0.3);
+        }
+        .badge-warn { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3); }
+
+        .answer-body p { margin-bottom: 0.5rem; }
+        .answer-body code {
+            background: rgba(255, 255, 255, 0.08); padding: 1px 4px;
+            border-radius: 3px; font-size: 0.9em;
         }
     </style>
 </head>
 
 <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white h-screen overflow-hidden flex flex-col md:flex-row">
 
-    <!-- Hidden File Input -->
-    <input type="file" id="fileInput" multiple accept=".pdf,.txt,.md" style="display: none;" />
+    <input type="file" id="fileInput" multiple
+           accept=".pdf,.txt,.md,.markdown,.py,.js,.jsx,.ts,.tsx,.go,.java,.rs,.cpp,.c,.rb,.php,.cs,.kt,.swift"
+           style="display: none;" />
 
-    <!-- Mobile Header -->
     <div class="md:hidden flex items-center justify-between p-4 bg-sidebar-dark border-b border-gray-800">
-        <span class="text-xl font-bold tracking-tight">RAG Assistant</span>
+        <span class="text-xl font-bold tracking-tight">Advanced RAG</span>
         <button id="mobileMenuBtn" class="text-gray-400 hover:text-white">
             <span class="material-symbols-outlined">menu</span>
         </button>
     </div>
 
-    <!-- Mobile Overlay -->
     <div id="mobileOverlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
 
-    <!-- Sidebar Section -->
     <aside id="sidebar" class="sidebar-mobile md:translate-x-0 fixed md:relative z-50 md:z-auto md:flex flex-col w-80 h-full bg-sidebar-dark border-r border-gray-800 flex-shrink-0">
-        <!-- Sidebar Header -->
         <div class="p-6 pb-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -140,7 +107,7 @@
                         <span class="material-symbols-outlined text-white text-lg">smart_toy</span>
                     </div>
                     <div>
-                        <h1 class="text-lg font-bold leading-tight">RAG Assistant</h1>
+                        <h1 class="text-lg font-bold leading-tight">Advanced RAG</h1>
                         <div class="flex items-center gap-1.5 mt-1">
                             <span id="statusDot" class="w-2 h-2 rounded-full bg-gray-500"></span>
                             <span id="statusText" class="text-xs text-gray-400 font-medium">Connecting...</span>
@@ -151,40 +118,38 @@
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
+            <div class="mt-3 flex flex-wrap gap-1">
+                <span id="featRerank" class="badge">Reranker: …</span>
+                <span id="featCtx" class="badge">Contextual: …</span>
+            </div>
         </div>
 
         <div class="flex-1 overflow-y-auto px-4 py-2 space-y-6">
-            <!-- Upload Section -->
             <div class="space-y-3">
                 <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider pl-1">Knowledge Base</h3>
                 <div id="uploadBox" class="border-2 border-dashed border-gray-700 hover:border-gray-600 rounded-xl p-6 flex flex-col items-center justify-center text-center transition-colors cursor-pointer group bg-gray-900/30">
                     <span class="material-symbols-outlined text-gray-500 group-hover:text-primary mb-2 transition-colors">cloud_upload</span>
-                    <p class="text-sm font-medium text-gray-300">Click to upload</p>
-                    <p class="text-xs text-gray-500 mt-1">PDF, TXT, or Markdown files</p>
+                    <p class="text-sm font-medium text-gray-300">Click or drop files</p>
+                    <p class="text-xs text-gray-500 mt-1">PDF · MD · TXT · code (.py .js .ts .go .java .rs ...)</p>
                 </div>
+                <div id="uploadProgress" class="hidden text-xs text-gray-400 px-1"></div>
             </div>
 
-            <!-- Documents List -->
             <div class="space-y-2">
                 <div class="flex items-center justify-between px-1">
                     <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Documents (<span id="docCount">0</span>)
                     </h3>
-                    <button id="refreshBtn" class="text-xs text-primary hover:text-primary/80 font-medium">
-                        Refresh
-                    </button>
+                    <button id="refreshBtn" class="text-xs text-primary hover:text-primary/80 font-medium">Refresh</button>
                 </div>
                 <ul id="documentsList" class="space-y-1">
-                    <!-- Documents will be loaded here -->
                     <li class="text-sm text-gray-500 text-center py-4">No documents uploaded yet</li>
                 </ul>
             </div>
 
-            <!-- Configuration -->
             <div class="space-y-4 pt-4 border-t border-gray-800">
                 <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider pl-1">Configuration</h3>
-                
-                <!-- Document Scope -->
+
                 <div class="space-y-1.5">
                     <label class="text-sm text-gray-300 font-medium">Document Scope</label>
                     <div class="relative">
@@ -197,82 +162,79 @@
                     </div>
                 </div>
 
-                <!-- Top K Slider -->
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
-                        <label class="text-sm text-gray-300 font-medium">Context Limit (Top K)</label>
-                        <span id="topKValue" class="text-xs font-mono bg-primary/20 text-primary px-1.5 py-0.5 rounded">3</span>
+                        <label class="text-sm text-gray-300 font-medium">Top K (after rerank)</label>
+                        <span id="topKValue" class="text-xs font-mono bg-primary/20 text-primary px-1.5 py-0.5 rounded">5</span>
                     </div>
-                    <input id="topKSlider" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" 
-                           max="10" min="1" type="range" value="3"/>
+                    <input id="topKSlider" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                           max="15" min="1" type="range" value="5"/>
                     <div class="flex justify-between text-xs text-gray-500 font-mono">
-                        <span>1</span>
-                        <span>10</span>
+                        <span>1</span><span>15</span>
                     </div>
                 </div>
+
+                <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                    <input id="streamToggle" type="checkbox" checked class="rounded bg-gray-800 border-gray-700 text-primary focus:ring-primary"/>
+                    Stream tokens
+                </label>
             </div>
         </div>
 
-        <!-- Sidebar Footer -->
         <div class="p-4 border-t border-gray-800">
-            <div class="text-xs text-gray-500 text-center">
-                <p>Powered by RAG Architecture</p>
+            <div class="text-[10px] text-gray-500 text-center leading-relaxed">
+                Hybrid search · BGE reranker · contextual retrieval<br/>HyDE · AST chunking · multi-turn
             </div>
         </div>
     </aside>
 
-    <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-full relative">
-        <!-- Header -->
         <header class="hidden md:flex items-center justify-between px-8 py-4 bg-background-dark/80 backdrop-blur border-b border-gray-800 z-10 sticky top-0">
             <div class="flex items-center gap-2">
                 <h2 class="text-lg font-semibold text-white">Chat</h2>
-                <span class="px-2 py-0.5 rounded bg-gray-800 text-xs text-gray-400 border border-gray-700">AI Powered</span>
+                <span class="px-2 py-0.5 rounded bg-gray-800 text-xs text-gray-400 border border-gray-700">Streaming · Citations</span>
             </div>
             <div class="flex items-center gap-3">
+                <button id="newSessionBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-800 text-sm text-white hover:bg-gray-700 border border-gray-700 transition-colors">
+                    <span class="material-symbols-outlined text-sm">restart_alt</span>
+                    New Session
+                </button>
                 <button id="exportBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-800 text-sm text-white hover:bg-gray-700 border border-gray-700 transition-colors">
                     <span class="material-symbols-outlined text-sm">ios_share</span>
                     Export
                 </button>
                 <button id="clearChatBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-red-400 hover:bg-red-400/10 transition-colors">
                     <span class="material-symbols-outlined text-sm">delete_sweep</span>
-                    Clear Chat
+                    Clear
                 </button>
             </div>
         </header>
 
-        <!-- Chat Area -->
         <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 scroll-smooth" id="chatContainer">
-            <!-- Welcome State -->
             <div id="welcomeState" class="h-full flex flex-col items-center justify-center opacity-40">
                 <span class="material-symbols-outlined text-6xl mb-4">chat_bubble_outline</span>
                 <p class="text-xl font-medium">How can I help you today?</p>
                 <p class="text-sm text-gray-500 mt-2">Upload documents and start asking questions</p>
             </div>
-
-            <!-- Messages will be added here -->
-            
-            <!-- Spacer for bottom input -->
             <div class="h-24"></div>
         </div>
 
-        <!-- Sticky Input Area -->
         <div class="absolute bottom-0 w-full bg-gradient-to-t from-background-dark via-background-dark to-transparent pt-10 pb-6 px-4 md:px-8">
             <div class="max-w-4xl mx-auto relative group">
                 <div class="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-indigo-500/50 rounded-xl opacity-30 group-focus-within:opacity-100 transition duration-500 blur-sm"></div>
                 <div class="relative bg-[#1a1f2b] rounded-xl shadow-2xl flex flex-col border border-gray-700 overflow-hidden">
-                    <textarea id="messageInput" 
-                              class="w-full bg-transparent border-0 text-white placeholder-gray-500 focus:ring-0 px-4 py-3 resize-none max-h-40 overflow-y-auto" 
-                              placeholder="Ask anything about your documents..." 
-                              rows="1" 
+                    <textarea id="messageInput"
+                              class="w-full bg-transparent border-0 text-white placeholder-gray-500 focus:ring-0 px-4 py-3 resize-none max-h-40 overflow-y-auto"
+                              placeholder="Ask anything about your documents..."
+                              rows="1"
                               style="min-height: 52px;"></textarea>
                     <div class="flex justify-between items-center px-2 pb-2">
                         <div class="flex items-center gap-1">
                             <span class="text-xs text-gray-600 px-2">Type your question</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="text-xs text-gray-500 mr-2 hidden md:inline-block">Press Enter to send</span>
-                            <button id="sendButton" 
+                            <span class="text-xs text-gray-500 mr-2 hidden md:inline-block">Enter to send · Shift+Enter newline</span>
+                            <button id="sendButton"
                                     class="bg-primary hover:bg-blue-600 text-white p-1.5 rounded-lg transition-colors shadow-lg shadow-primary/20 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
                                 <span class="material-symbols-outlined text-[20px]">arrow_upward</span>
                             </button>
@@ -280,11 +242,10 @@
                     </div>
                 </div>
             </div>
-            <p class="text-center text-[10px] text-gray-600 mt-2">AI can make mistakes. Please verify important information.</p>
+            <p class="text-center text-[10px] text-gray-600 mt-2">AI can make mistakes. Verify important information.</p>
         </div>
     </main>
 
-    <!-- Toast Notification (Hidden by default) -->
     <div id="toast" class="fixed top-4 right-4 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg border border-gray-700 hidden z-50">
         <div class="flex items-center gap-2">
             <span id="toastIcon" class="material-symbols-outlined text-sm"></span>
@@ -293,140 +254,131 @@
     </div>
 
     <script>
-        // ========================================
-        // CONFIGURATION
-        // ========================================
-        const API_BASE = "http://localhost:8000";
-        
-        // ========================================
-        // DOM ELEMENTS
-        // ========================================
-        const fileInput = document.getElementById("fileInput");
-        const uploadBox = document.getElementById("uploadBox");
-        const documentsList = document.getElementById("documentsList");
-        const docCount = document.getElementById("docCount");
-        const documentScope = document.getElementById("documentScope");
-        const topKSlider = document.getElementById("topKSlider");
-        const topKValue = document.getElementById("topKValue");
-        const messageInput = document.getElementById("messageInput");
-        const sendButton = document.getElementById("sendButton");
-        const chatContainer = document.getElementById("chatContainer");
-        const welcomeState = document.getElementById("welcomeState");
-        const clearChatBtn = document.getElementById("clearChatBtn");
-        const refreshBtn = document.getElementById("refreshBtn");
-        const statusDot = document.getElementById("statusDot");
-        const statusText = document.getElementById("statusText");
-        const toast = document.getElementById("toast");
-        const toastIcon = document.getElementById("toastIcon");
-        const toastMessage = document.getElementById("toastMessage");
-        const exportBtn = document.getElementById("exportBtn");
-        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-        const closeSidebarBtn = document.getElementById("closeSidebarBtn");
-        const sidebar = document.getElementById("sidebar");
-        const mobileOverlay = document.getElementById("mobileOverlay");
+        const API_BASE = window.location.origin.startsWith("http") ? window.location.origin : "http://localhost:8000";
 
-        // ========================================
-        // STATE (In-memory storage)
-        // ========================================
+        // ---------- DOM ----------
+        const $ = (id) => document.getElementById(id);
+        const fileInput = $("fileInput");
+        const uploadBox = $("uploadBox");
+        const uploadProgress = $("uploadProgress");
+        const documentsList = $("documentsList");
+        const docCount = $("docCount");
+        const documentScope = $("documentScope");
+        const topKSlider = $("topKSlider");
+        const topKValue = $("topKValue");
+        const streamToggle = $("streamToggle");
+        const messageInput = $("messageInput");
+        const sendButton = $("sendButton");
+        const chatContainer = $("chatContainer");
+        const welcomeState = $("welcomeState");
+        const clearChatBtn = $("clearChatBtn");
+        const newSessionBtn = $("newSessionBtn");
+        const refreshBtn = $("refreshBtn");
+        const statusDot = $("statusDot");
+        const statusText = $("statusText");
+        const featRerank = $("featRerank");
+        const featCtx = $("featCtx");
+        const toast = $("toast");
+        const toastIcon = $("toastIcon");
+        const toastMessage = $("toastMessage");
+        const exportBtn = $("exportBtn");
+        const mobileMenuBtn = $("mobileMenuBtn");
+        const closeSidebarBtn = $("closeSidebarBtn");
+        const sidebar = $("sidebar");
+        const mobileOverlay = $("mobileOverlay");
+
+        // ---------- state ----------
         let documents = [];
         let currentDocumentId = null;
-        let topK = 3;
+        let topK = 5;
         let chatHistory = [];
         let isProcessing = false;
 
-        // ========================================
-        // UTILITY FUNCTIONS
-        // ========================================
-        
-        function showToast(message, type = 'info') {
-            const icons = {
-                success: 'check_circle',
-                error: 'error',
-                info: 'info',
-                warning: 'warning'
-            };
-            
+        const SESSION_KEY = "rag_session_id";
+        function getSessionId() {
+            let id = localStorage.getItem(SESSION_KEY);
+            if (!id) {
+                id = (crypto?.randomUUID?.() ||
+                      ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+                        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c/4).toString(16)));
+                localStorage.setItem(SESSION_KEY, id);
+            }
+            return id;
+        }
+        function newSession() {
+            localStorage.removeItem(SESSION_KEY);
+            return getSessionId();
+        }
+
+        // ---------- utils ----------
+        function showToast(message, type = "info") {
+            const icons = { success: "check_circle", error: "error", info: "info", warning: "warning" };
             toastIcon.textContent = icons[type] || icons.info;
             toastMessage.textContent = message;
-            toast.classList.remove('hidden');
-            
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 3000);
+            toast.classList.remove("hidden");
+            setTimeout(() => toast.classList.add("hidden"), 3000);
+        }
+        function escapeHTML(t) { const d = document.createElement("div"); d.textContent = t == null ? "" : String(t); return d.innerHTML; }
+        function formatFileSize(b) {
+            if (b < 1024) return b + " B";
+            if (b < 1048576) return (b/1024).toFixed(1) + " KB";
+            return (b/1048576).toFixed(1) + " MB";
+        }
+        function formatDate(s) {
+            const d = new Date(s), now = new Date(), diff = Math.floor((now-d)/86400000);
+            if (diff === 0) return "Today";
+            if (diff === 1) return "Yesterday";
+            if (diff < 7) return `${diff}d ago`;
+            return d.toLocaleDateString();
+        }
+        function fileIconFor(ext) {
+            const code = ["py","js","jsx","ts","tsx","go","java","rs","cpp","c","rb","php","cs","kt","swift"];
+            if (ext === "pdf") return "picture_as_pdf";
+            if (code.includes(ext)) return "code";
+            return "article";
         }
 
-        function formatFileSize(bytes) {
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 0) return 'Today';
-            if (diffDays === 1) return 'Yesterday';
-            if (diffDays < 7) return `${diffDays} days ago`;
-            return date.toLocaleDateString();
-        }
-
-        function escapeHTML(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // ========================================
-        // MOBILE MENU FUNCTIONS
-        // ========================================
-        
+        // ---------- mobile ----------
         function openMobileSidebar() {
-            sidebar.classList.add('open');
-            mobileOverlay.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+            sidebar.classList.add("open"); mobileOverlay.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
         }
-
         function closeMobileSidebar() {
-            sidebar.classList.remove('open');
-            mobileOverlay.classList.add('hidden');
-            document.body.style.overflow = '';
+            sidebar.classList.remove("open"); mobileOverlay.classList.add("hidden");
+            document.body.style.overflow = "";
         }
 
-        // ========================================
-        // API FUNCTIONS
-        // ========================================
-        
+        // ---------- backend ----------
         async function checkBackendHealth() {
             try {
-                const response = await fetch(`${API_BASE}/health`);
-                if (response.ok) {
-                    statusDot.className = 'w-2 h-2 rounded-full bg-green-500 animate-pulse';
-                    statusText.textContent = 'System Ready';
-                    return true;
-                }
-            } catch (error) {
-                statusDot.className = 'w-2 h-2 rounded-full bg-red-500';
-                statusText.textContent = 'Backend Offline';
+                const r = await fetch(`${API_BASE}/health`);
+                if (!r.ok) throw new Error("not ok");
+                const j = await r.json();
+                statusDot.className = "w-2 h-2 rounded-full bg-green-500 animate-pulse";
+                statusText.textContent = "System Ready";
+                featRerank.textContent = "Reranker: " + (j.reranker ? "on" : "off");
+                featRerank.className = "badge" + (j.reranker ? "" : " badge-warn");
+                featCtx.textContent = "Contextual: " + (j.contextual_retrieval ? "on" : "off");
+                featCtx.className = "badge" + (j.contextual_retrieval ? "" : " badge-warn");
+                return true;
+            } catch {
+                statusDot.className = "w-2 h-2 rounded-full bg-red-500";
+                statusText.textContent = "Backend Offline";
                 return false;
             }
         }
 
         async function loadDocuments() {
             try {
-                const response = await fetch(`${API_BASE}/documents`);
-                const data = await response.json();
+                const r = await fetch(`${API_BASE}/documents`);
+                const data = await r.json();
                 documents = data.documents || [];
-                
                 renderDocumentsList();
                 updateDocumentScope();
                 docCount.textContent = documents.length;
-                
-            } catch (error) {
-                console.error('Error loading documents:', error);
-                showToast('Failed to load documents', 'error');
+            } catch (e) {
+                console.error(e);
+                showToast("Failed to load documents", "error");
             }
         }
 
@@ -435,17 +387,14 @@
                 documentsList.innerHTML = '<li class="text-sm text-gray-500 text-center py-4">No documents uploaded yet</li>';
                 return;
             }
-
             documentsList.innerHTML = documents.map(doc => `
-                <li class="group flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer">
+                <li class="group flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
                     <div class="flex items-center justify-center w-8 h-8 rounded bg-gray-800 text-gray-400 group-hover:text-white">
-                        <span class="material-symbols-outlined text-lg">
-                            ${doc.file_type === 'pdf' ? 'description' : 'article'}
-                        </span>
+                        <span class="material-symbols-outlined text-lg">${fileIconFor(doc.file_type)}</span>
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-200 truncate">${escapeHTML(doc.filename)}</p>
-                        <p class="text-xs text-gray-500">${formatFileSize(doc.file_size)} • ${formatDate(doc.uploaded_at)}</p>
+                        <p class="text-xs text-gray-500">${formatFileSize(doc.file_size)} · ${formatDate(doc.uploaded_at)}</p>
                     </div>
                     <div class="flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
                         <button onclick="downloadDocument(${doc.id})" class="text-gray-500 hover:text-blue-400 p-1 rounded hover:bg-white/10" title="Download">
@@ -456,334 +405,331 @@
                         </button>
                     </div>
                 </li>
-            `).join('');
+            `).join("");
         }
 
         function updateDocumentScope() {
             documentScope.innerHTML = '<option value="">All Documents</option>';
-            documents.forEach(doc => {
-                documentScope.innerHTML += `<option value="${doc.id}">${escapeHTML(doc.filename)}</option>`;
+            documents.forEach(d => {
+                documentScope.innerHTML += `<option value="${d.id}">${escapeHTML(d.filename)}</option>`;
             });
         }
 
         async function uploadDocuments(files) {
-            const formData = new FormData();
-            
-            for (const file of files) {
-                formData.append("files", file);
-            }
-
+            const fd = new FormData();
+            for (const f of files) fd.append("files", f);
+            uploadProgress.classList.remove("hidden");
+            uploadProgress.textContent = `Uploading ${files.length} file(s)…`;
             try {
-                showToast(`Uploading ${files.length} file(s)...`, 'info');
-                
-                const response = await fetch(`${API_BASE}/upload`, {
-                    method: "POST",
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    showToast(`Successfully uploaded ${data.total_documents} document(s)`, 'success');
+                const r = await fetch(`${API_BASE}/upload`, { method: "POST", body: fd });
+                const data = await r.json();
+                if (r.ok) {
+                    const ok = data.documents.filter(d => d.status === "success").length;
+                    const fail = data.documents.length - ok;
+                    showToast(`Uploaded ${ok} ok${fail ? `, ${fail} failed` : ""}`, fail ? "warning" : "success");
+                    uploadProgress.textContent = `Done · ${data.total_chunks} chunks total`;
                     await loadDocuments();
                 } else {
-                    showToast(`Upload failed: ${data.detail}`, 'error');
+                    showToast(`Upload failed: ${data.detail}`, "error");
+                    uploadProgress.textContent = `Failed: ${data.detail}`;
                 }
-                
-            } catch (error) {
-                console.error('Upload error:', error);
-                showToast('Upload failed. Check backend connection.', 'error');
+            } catch (e) {
+                showToast("Upload failed. Check backend connection.", "error");
+                uploadProgress.textContent = "Network error";
+            } finally {
+                setTimeout(() => uploadProgress.classList.add("hidden"), 4000);
             }
         }
 
-        async function downloadDocument(docId) {
+        async function downloadDocument(id) {
+            window.open(`${API_BASE}/document/${id}/download`, "_blank");
+        }
+        async function deleteDocument(id) {
+            if (!confirm("Delete this document and its chunks?")) return;
             try {
-                window.open(`${API_BASE}/document/${docId}/download`, '_blank');
-                showToast('Download started', 'success');
-            } catch (error) {
-                showToast('Download failed', 'error');
-            }
+                const r = await fetch(`${API_BASE}/document/${id}`, { method: "DELETE" });
+                if (r.ok) { showToast("Deleted", "success"); await loadDocuments(); }
+                else showToast("Delete failed", "error");
+            } catch { showToast("Delete failed", "error"); }
         }
+        window.downloadDocument = downloadDocument;
+        window.deleteDocument = deleteDocument;
 
-        async function deleteDocument(docId) {
-            if (!confirm('Are you sure you want to delete this document?')) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/document/${docId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (response.ok) {
-                    showToast('Document deleted', 'success');
-                    await loadDocuments();
-                } else {
-                    showToast('Delete failed', 'error');
-                }
-            } catch (error) {
-                showToast('Delete failed', 'error');
-            }
-        }
-
+        // ---------- chat ----------
         async function sendMessage() {
             const question = messageInput.value.trim();
             if (!question || isProcessing) return;
+            if (documents.length === 0) { showToast("Please upload a document first", "warning"); return; }
 
-            // Check if documents exist
-            if (documents.length === 0) {
-                showToast('Please upload a document first', 'warning');
-                return;
-            }
-
-            // Prevent multiple simultaneous requests
             isProcessing = true;
-
-            // Hide welcome state
-            welcomeState.style.display = 'none';
-
-            // Add user message
+            welcomeState.style.display = "none";
             addUserMessage(question);
-            
-            // Store in chat history
-            chatHistory.push({
-                role: 'user',
-                content: question,
-                timestamp: new Date().toISOString()
-            });
-
+            chatHistory.push({ role: "user", content: question, timestamp: new Date().toISOString() });
             messageInput.value = "";
+            messageInput.style.height = "auto";
             sendButton.disabled = true;
 
-            // Add loading indicator
-            const loadingId = addLoadingMessage();
+            const aiBubble = createAIMessageContainer();
+            const bodyEl = aiBubble.querySelector(".answer-body");
+            const diagEl = aiBubble.querySelector(".diagnostics");
+            const sourcesEl = aiBubble.querySelector(".sources-slot");
+            bodyEl.classList.add("stream-cursor");
+
+            const body = {
+                question,
+                document_id: currentDocumentId || null,
+                top_k: topK,
+                session_id: getSessionId(),
+            };
 
             try {
-                const response = await fetch(`${API_BASE}/chat`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({
-                        question: question,
-                        document_id: currentDocumentId || null,
-                        top_k: topK
-                    })
-                });
-
-                const data = await response.json();
-
-                // Remove loading indicator
-                removeLoadingMessage(loadingId);
-
-                if (response.ok) {
-                    // Add AI response
-                    addAIMessage(data.answer, data.sources);
-                    
-                    // Store in chat history
-                    chatHistory.push({
-                        role: 'assistant',
-                        content: data.answer,
-                        sources: data.sources,
-                        timestamp: new Date().toISOString()
-                    });
+                if (streamToggle.checked) {
+                    await streamChat(body, bodyEl, diagEl, sourcesEl);
                 } else {
-                    showToast(`Error: ${data.detail}`, 'error');
-                    addAIMessage(`Sorry, I encountered an error: ${data.detail}`, []);
+                    await singleChat(body, bodyEl, diagEl, sourcesEl);
                 }
-                
-            } catch (error) {
-                removeLoadingMessage(loadingId);
-                console.error('Chat error:', error);
-                showToast('Failed to get response. Check backend connection.', 'error');
-                addAIMessage('Sorry, I could not connect to the backend. Please check if the server is running.', []);
+            } catch (e) {
+                console.error(e);
+                bodyEl.innerHTML = `<span class="text-red-400">Error: ${escapeHTML(e.message)}</span>`;
+                showToast("Request failed", "error");
             } finally {
+                bodyEl.classList.remove("stream-cursor");
                 sendButton.disabled = false;
                 isProcessing = false;
                 messageInput.focus();
             }
         }
 
-        // ========================================
-        // UI RENDERING FUNCTIONS
-        // ========================================
-        
+        async function singleChat(body, bodyEl, diagEl, sourcesEl) {
+            const r = await fetch(`${API_BASE}/chat`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
+            const data = await r.json();
+            if (!r.ok) throw new Error(data.detail || "request failed");
+            renderDiagnostics(diagEl, data.diagnostics);
+            bodyEl.innerHTML = renderAnswerWithCitations(data.answer, data.sources);
+            renderSources(sourcesEl, data.sources);
+            chatHistory.push({ role: "assistant", content: data.answer, sources: data.sources, diagnostics: data.diagnostics });
+        }
+
+        async function streamChat(body, bodyEl, diagEl, sourcesEl) {
+            const resp = await fetch(`${API_BASE}/chat/stream`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
+            if (!resp.ok || !resp.body) {
+                const t = await resp.text();
+                throw new Error(`HTTP ${resp.status}: ${t.slice(0, 200)}`);
+            }
+
+            const reader = resp.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+            let answer = "";
+            let sources = [];
+            let diagnostics = {};
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+
+                const events = buffer.split("\n\n");
+                buffer = events.pop();
+                for (const evt of events) {
+                    const line = evt.split("\n").find(l => l.startsWith("data:"));
+                    if (!line) continue;
+                    const payload = line.slice(5).trim();
+                    if (!payload) continue;
+                    let obj;
+                    try { obj = JSON.parse(payload); } catch { continue; }
+
+                    if (obj.type === "meta") {
+                        sources = obj.sources || [];
+                        diagnostics = obj.diagnostics || {};
+                        renderDiagnostics(diagEl, diagnostics);
+                        renderSources(sourcesEl, sources);
+                    } else if (obj.type === "token") {
+                        answer += obj.text || "";
+                        bodyEl.innerHTML = renderAnswerWithCitations(answer, sources);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    } else if (obj.type === "done") {
+                        // final tidy-up
+                    }
+                }
+            }
+            chatHistory.push({ role: "assistant", content: answer, sources, diagnostics });
+        }
+
+        // ---------- rendering ----------
         function addUserMessage(text) {
-            const messageHTML = `
+            const html = `
                 <div class="flex justify-end w-full fade-in">
                     <div class="flex max-w-3xl items-start gap-3 flex-row-reverse">
                         <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0 border border-gray-600">
                             <span class="material-symbols-outlined text-sm text-gray-300">person</span>
                         </div>
                         <div class="bg-primary/20 border border-primary/20 text-white rounded-2xl rounded-tr-sm px-5 py-3.5 shadow-sm">
-                            <p class="text-sm md:text-base leading-relaxed">${escapeHTML(text)}</p>
+                            <p class="text-sm md:text-base leading-relaxed whitespace-pre-wrap">${escapeHTML(text)}</p>
                         </div>
                     </div>
-                </div>
-            `;
-            
-            chatContainer.insertAdjacentHTML('beforeend', messageHTML);
+                </div>`;
+            chatContainer.insertAdjacentHTML("beforeend", html);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function addLoadingMessage() {
-            const loadingId = 'loading-' + Date.now();
-            const loadingHTML = `
-                <div id="${loadingId}" class="flex w-full fade-in">
-                    <div class="flex max-w-3xl items-start gap-4">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
-                            <span class="material-symbols-outlined text-sm text-white">smart_toy</span>
-                        </div>
-                        <div class="flex items-center gap-2 mt-2">
-                            <span class="w-2 h-2 rounded-full bg-gray-500 animate-bounce-dot"></span>
-                            <span class="w-2 h-2 rounded-full bg-gray-500 animate-bounce-dot delay-100"></span>
-                            <span class="w-2 h-2 rounded-full bg-gray-500 animate-bounce-dot delay-200"></span>
-                        </div>
+        function createAIMessageContainer() {
+            const wrapper = document.createElement("div");
+            wrapper.className = "flex w-full fade-in";
+            wrapper.innerHTML = `
+                <div class="flex max-w-3xl items-start gap-4 w-full">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
+                        <span class="material-symbols-outlined text-sm text-white">smart_toy</span>
                     </div>
-                </div>
-            `;
-            
-            chatContainer.insertAdjacentHTML('beforeend', loadingHTML);
+                    <div class="flex flex-col gap-3 w-full min-w-0">
+                        <div class="diagnostics"></div>
+                        <div class="bg-card-dark border border-gray-800 text-gray-100 rounded-2xl rounded-tl-sm px-6 py-5 shadow-sm">
+                            <div class="answer-body text-sm md:text-base leading-relaxed whitespace-pre-wrap"></div>
+                        </div>
+                        <div class="sources-slot"></div>
+                    </div>
+                </div>`;
+            chatContainer.appendChild(wrapper);
             chatContainer.scrollTop = chatContainer.scrollHeight;
-            return loadingId;
+            return wrapper;
         }
 
-        function removeLoadingMessage(loadingId) {
-            const loadingElement = document.getElementById(loadingId);
-            if (loadingElement) {
-                loadingElement.remove();
+        function renderDiagnostics(el, diag) {
+            if (!diag) { el.innerHTML = ""; return; }
+            const bits = [];
+            if (diag.rewritten_query && diag.rewritten_query !== diag.original_query) {
+                bits.push(`<span class="badge">rewrite</span><i class="text-gray-400">${escapeHTML(diag.rewritten_query)}</i>`);
             }
+            if (diag.hyde) {
+                const hyde = diag.hyde.length > 160 ? diag.hyde.slice(0, 160) + "…" : diag.hyde;
+                bits.push(`<span class="badge">HyDE</span><i class="text-gray-400">${escapeHTML(hyde)}</i>`);
+            }
+            if (diag.candidates) bits.push(`<span class="badge">${diag.candidates} candidates</span>`);
+            if (diag.reranked) bits.push(`<span class="badge">reranked</span>`);
+            if (!bits.length) { el.innerHTML = ""; return; }
+            el.innerHTML = `<div class="text-xs text-gray-500 px-1">${bits.join(" &nbsp; ")}</div>`;
         }
 
-        function addAIMessage(answer, sources) {
-            const sourcesHTML = sources && sources.length > 0 ? `
-                <div class="w-full mt-3">
-                    <details class="group bg-gray-900/50 border border-gray-800 rounded-lg overflow-hidden transition-all duration-300">
-                        <summary class="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-800/50 transition-colors select-none">
-                            <div class="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                                <span class="material-symbols-outlined text-base">library_books</span>
-                                Retrieval Sources (${sources.length})
-                            </div>
-                            <span class="material-symbols-outlined text-gray-500 transform group-open:rotate-180 transition-transform text-sm">expand_more</span>
-                        </summary>
-                        <div class="p-3 pt-0 grid gap-3 grid-cols-1 md:grid-cols-2">
-                            ${sources.map((source, idx) => {
-                                const scoreClass = source.similarity > 0.8 ? 'bg-green-500/10 text-green-400 border-green-500/20' : 
-                                                   source.similarity > 0.6 ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
-                                                   'bg-gray-500/10 text-gray-400 border-gray-500/20';
-                                
-                                return `
-                                    <div class="bg-gray-800/40 border border-gray-700/50 rounded-md p-3 hover:border-primary/40 transition-colors">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <div class="flex items-center gap-2 truncate flex-1 mr-2">
-                                                <span class="material-symbols-outlined text-gray-500 text-sm">description</span>
-                                                <span class="text-xs font-medium text-gray-300 truncate"
-
-                                                <span class="text-xs font-medium text-gray-300 truncate">${escapeHTML(source.filename)}</span>
-                                            </div>
-                                            <span class="text-[10px] font-mono ${scoreClass} px-1.5 py-0.5 rounded border whitespace-nowrap">
-                                                ${(source.similarity * 100).toFixed(0)}%
-                                            </span>
-                                        </div>
-                                        <p class="text-xs text-gray-400 leading-relaxed line-clamp-3 font-mono">
-                                            ${escapeHTML(source.text)}
-                                        </p>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </details>
-                </div>
-            ` : '';
-
-            const messageHTML = `
-                <div class="flex w-full fade-in">
-                    <div class="flex max-w-3xl items-start gap-4">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
-                            <span class="material-symbols-outlined text-sm text-white">smart_toy</span>
-                        </div>
-                        <div class="flex flex-col gap-3 w-full">
-                            <div class="bg-card-dark border border-gray-800 text-gray-100 rounded-2xl rounded-tl-sm px-6 py-5 shadow-sm">
-                                <p class="text-sm md:text-base leading-relaxed whitespace-pre-wrap">${escapeHTML(answer)}</p>
-                            </div>
-                            ${sourcesHTML}
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            chatContainer.insertAdjacentHTML('beforeend', messageHTML);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+        function renderAnswerWithCitations(text, sources) {
+            const safe = escapeHTML(text);
+            // Replace [1], [2], … with clickable badges
+            return safe.replace(/\[(\d+)\]/g, (m, n) => {
+                const idx = parseInt(n, 10) - 1;
+                const src = sources && sources[idx];
+                const tip = src ? `${src.filename}${src.section ? " — " + src.section : ""}` : `Source ${n}`;
+                return `<span class="citation" title="${escapeHTML(tip)}" onclick="document.getElementById('source-${n}')?.scrollIntoView({behavior:'smooth',block:'center'})">[${n}]</span>`;
+            });
         }
 
-        // ========================================
-        // EVENT LISTENERS
-        // ========================================
-        
-        uploadBox.addEventListener('click', () => fileInput.click());
-        
-        fileInput.addEventListener('change', async () => {
+        function renderSources(el, sources) {
+            if (!sources || !sources.length) { el.innerHTML = ""; return; }
+            const rows = sources.map((s, i) => {
+                const n = i + 1;
+                const sim = (s.similarity || 0);
+                const cls = sim > 0.6 ? "bg-green-500/10 text-green-400 border-green-500/20"
+                          : sim > 0.4 ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                                      : "bg-gray-500/10 text-gray-400 border-gray-500/20";
+                const rerank = s.rerank_score ? ` · rerank ${(s.rerank_score).toFixed(2)}` : "";
+                const rrf = s.rrf_score ? ` · rrf ${(s.rrf_score).toFixed(3)}` : "";
+                const section = s.section ? `<span class="text-gray-500">· ${escapeHTML(s.section)}</span>` : "";
+                return `
+                    <div id="source-${n}" class="bg-gray-800/40 border border-gray-700/50 rounded-md p-3 hover:border-primary/40 transition-colors">
+                        <div class="flex items-center justify-between mb-2 gap-2">
+                            <div class="flex items-center gap-2 text-xs min-w-0">
+                                <span class="citation" style="cursor:default">[${n}]</span>
+                                <span class="material-symbols-outlined text-gray-500 text-sm">description</span>
+                                <span class="font-medium text-gray-300 truncate">${escapeHTML(s.filename)}</span>
+                                ${section}
+                            </div>
+                            <span class="text-[10px] font-mono ${cls} px-1.5 py-0.5 rounded border whitespace-nowrap">
+                                sim ${(sim*100).toFixed(0)}%${rerank}${rrf}
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-relaxed font-mono whitespace-pre-wrap">${escapeHTML(s.text)}</p>
+                    </div>`;
+            }).join("");
+
+            el.innerHTML = `
+                <details class="group bg-gray-900/50 border border-gray-800 rounded-lg overflow-hidden" open>
+                    <summary class="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-800/50 transition-colors select-none">
+                        <div class="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                            <span class="material-symbols-outlined text-base">library_books</span>
+                            Retrieval Sources (${sources.length})
+                        </div>
+                        <span class="material-symbols-outlined text-gray-500 transform group-open:rotate-180 transition-transform text-sm">expand_more</span>
+                    </summary>
+                    <div class="p-3 pt-0 grid gap-3 grid-cols-1 md:grid-cols-2">${rows}</div>
+                </details>`;
+        }
+
+        // ---------- listeners ----------
+        uploadBox.addEventListener("click", () => fileInput.click());
+        ["dragover","dragenter"].forEach(ev => uploadBox.addEventListener(ev, e => { e.preventDefault(); uploadBox.classList.add("border-primary"); }));
+        ["dragleave","drop"].forEach(ev => uploadBox.addEventListener(ev, e => { e.preventDefault(); uploadBox.classList.remove("border-primary"); }));
+        uploadBox.addEventListener("drop", e => {
+            if (e.dataTransfer?.files?.length) uploadDocuments(e.dataTransfer.files);
+        });
+        fileInput.addEventListener("change", async () => {
             if (fileInput.files.length > 0) {
                 await uploadDocuments(fileInput.files);
-                fileInput.value = '';
+                fileInput.value = "";
             }
         });
 
-        sendButton.addEventListener('click', sendMessage);
-        
-        messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
+        sendButton.addEventListener("click", sendMessage);
+        messageInput.addEventListener("keydown", e => {
+            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+        });
+        messageInput.addEventListener("input", () => {
+            messageInput.style.height = "auto";
+            messageInput.style.height = Math.min(messageInput.scrollHeight, 160) + "px";
         });
 
-        topKSlider.addEventListener('input', (e) => {
-            topK = parseInt(e.target.value);
-            topKValue.textContent = topK;
+        topKSlider.addEventListener("input", e => { topK = parseInt(e.target.value); topKValue.textContent = topK; });
+        documentScope.addEventListener("change", e => { currentDocumentId = e.target.value ? parseInt(e.target.value) : null; });
+
+        clearChatBtn.addEventListener("click", () => {
+            if (!confirm("Clear all messages from view?")) return;
+            chatContainer.querySelectorAll(".fade-in").forEach(el => el.remove());
+            welcomeState.style.display = "flex";
+            chatHistory = [];
         });
 
-        documentScope.addEventListener('change', (e) => {
-            currentDocumentId = e.target.value ? parseInt(e.target.value) : null;
+        newSessionBtn.addEventListener("click", () => {
+            if (!confirm("Start a new chat session? Server-side history will be reset for new questions.")) return;
+            newSession();
+            chatContainer.querySelectorAll(".fade-in").forEach(el => el.remove());
+            welcomeState.style.display = "flex";
+            chatHistory = [];
+            showToast("New session started", "success");
         });
 
-        clearChatBtn.addEventListener('click', () => {
-            if (confirm('Clear all messages?')) {
-                const messages = chatContainer.querySelectorAll('.fade-in');
-                messages.forEach(msg => msg.remove());
-                welcomeState.style.display = 'flex';
-                chatHistory = [];
-            }
+        refreshBtn.addEventListener("click", loadDocuments);
+        mobileMenuBtn.addEventListener("click", openMobileSidebar);
+        closeSidebarBtn.addEventListener("click", closeMobileSidebar);
+        mobileOverlay.addEventListener("click", closeMobileSidebar);
+
+        exportBtn.addEventListener("click", () => {
+            if (!chatHistory.length) { showToast("No chat history to export", "warning"); return; }
+            const blob = new Blob([JSON.stringify(chatHistory, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url; a.download = `chat-${new Date().toISOString()}.json`; a.click();
+            showToast("Exported", "success");
         });
 
-        refreshBtn.addEventListener('click', loadDocuments);
-
-        mobileMenuBtn.addEventListener('click', openMobileSidebar);
-        closeSidebarBtn.addEventListener('click', closeMobileSidebar);
-        mobileOverlay.addEventListener('click', closeMobileSidebar);
-
-        exportBtn.addEventListener('click', () => {
-            if (chatHistory.length === 0) {
-                showToast('No chat history to export', 'warning');
-                return;
-            }
-            
-            const dataStr = JSON.stringify(chatHistory, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `chat-history-${new Date().toISOString()}.json`;
-            link.click();
-            showToast('Chat exported successfully', 'success');
-        });
-
-        // ========================================
-        // INITIALIZATION
-        // ========================================
-        
+        // ---------- init ----------
         (async function init() {
-            console.log('🚀 Initializing RAG Assistant...');
+            getSessionId();
             await checkBackendHealth();
             await loadDocuments();
             messageInput.focus();
-            console.log('✅ Initialization complete');
         })();
     </script>
 </body>

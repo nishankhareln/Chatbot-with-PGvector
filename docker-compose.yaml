@@ -25,9 +25,7 @@ services:
 
   # FastAPI Backend
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: simplechatbot-backend:patched
     container_name: rag_backend
     environment:
       - DATABASE_URL=postgresql://postgres:2060@postgres:5432/rag_database
@@ -37,6 +35,7 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+      - ./templates:/app/templates
       - uploads_data:/app/uploads
     depends_on:
       postgres:
@@ -44,7 +43,9 @@ services:
     networks:
       - rag_network
     restart: unless-stopped
+    entrypoint: []
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    working_dir: /app
 
 volumes:
   postgres_data:
